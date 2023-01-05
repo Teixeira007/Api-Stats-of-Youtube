@@ -1,4 +1,4 @@
-package com.ufpb.home.Apistatsofyoutube;
+package br.com.ufpb.statsyoutube;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
