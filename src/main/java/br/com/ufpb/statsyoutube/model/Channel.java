@@ -1,21 +1,35 @@
 package br.com.ufpb.statsyoutube.model;
 
-import jakarta.persistence.Column;
+import java.util.ArrayList;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Data;
+import jakarta.persistence.OneToOne;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 
 @Entity
-@Data
+@Setter @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Channel {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    private Subtitles subtitles;
+    // @Column(nullable = false)
+    // private ArrayList<String> subtitles = new ArrayList<>();
+    
+    
     
 }
