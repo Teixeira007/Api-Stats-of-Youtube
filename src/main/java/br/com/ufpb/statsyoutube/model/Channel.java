@@ -8,9 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 
 @Entity
@@ -23,13 +21,24 @@ public class Channel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
 
-    
-    @OneToOne(cascade = CascadeType.ALL)
-    private Subtitles subtitles;
-    // @Column(nullable = false)
-    // private ArrayList<String> subtitles = new ArrayList<>();
-    
-    
+    private String url;
+
+    public Channel(String name, String url) {
+        this.name = name;
+        this.url = url;
+    }
+
+    public Channel() {
+
+    }
+
+
+    @Override
+    public String toString() {
+        return "Canal [name=" + name + ", url=" + url + "]";
+    }
+
     
 }
