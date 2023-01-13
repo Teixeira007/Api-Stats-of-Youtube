@@ -14,18 +14,18 @@ import lombok.*;
 @Entity
 @Setter @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Channel {
+public class Channel implements  Comparable<Channel>{
 
     @EqualsAndHashCode.Include
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
     private String url;
 
-    public Channel(String name, String url) {
+    public Channel(Long id, String name, String url) {
+        this.id = id;
         this.name = name;
         this.url = url;
     }
@@ -40,5 +40,15 @@ public class Channel {
         return "Canal [name=" + name + ", url=" + url + "]";
     }
 
-    
+//    CompareTo - usado para ordenar os canais pelo atributo name
+    @Override
+    public int compareTo(Channel annotherChannel) {
+        if((annotherChannel.name.compareTo(this.name)) < 0){
+            return -1;
+        }else if((annotherChannel.name.compareTo(this.name)) > 0){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
 }
