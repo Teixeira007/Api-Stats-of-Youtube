@@ -53,8 +53,41 @@ public class ChannelController {
 		}
 
 
-		Collections.sort(channels);
+//		Collections.sort(channels);
+//		for(int i=0; i<channels.size();i++){
+//			System.out.println(channels.get(i).getName());
+//		}
+
 		return channels;
+	}
+
+	@GetMapping("/frequency")
+	public List<Channel> getMoreOccurrencesOfAllTime(){
+
+		List<Channel> channels;
+		channels = getListChannels();
+		Collections.sort(channels, Channel::compareTo);
+
+		String current = null;
+		List<Channel> listChannelsFrequency = new ArrayList<>();
+		int cnt = 0;
+
+
+		for(int i =0; i<channels.size(); i++){
+			System.out.println(channels.get(i).getName());
+			if(!channels.get(i).getName().equals(current)){
+				if(cnt > 0){
+					listChannelsFrequency.add(new Channel(channels.get(i-1).getName(), cnt));
+				}
+				current = channels.get(i).getName();
+				cnt = 1;
+			}else{
+				cnt++;
+			}
+		}
+
+		Collections.sort(listChannelsFrequency, Channel::compareToOccorrence);
+		return listChannelsFrequency;
 	}
 	
 }

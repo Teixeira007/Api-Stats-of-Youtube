@@ -24,6 +24,8 @@ public class Channel implements  Comparable<Channel>{
 
     private String url;
 
+    private int occurrence;
+
     public Channel(Long id, String name, String url) {
         this.id = id;
         this.name = name;
@@ -32,6 +34,11 @@ public class Channel implements  Comparable<Channel>{
 
     public Channel() {
 
+    }
+
+    public Channel(String name, int occurrence){
+        this.name = name;
+        this.occurrence = occurrence;
     }
 
 
@@ -43,9 +50,20 @@ public class Channel implements  Comparable<Channel>{
 //    CompareTo - usado para ordenar os canais pelo atributo name
     @Override
     public int compareTo(Channel annotherChannel) {
-        if((annotherChannel.name.compareTo(this.name)) < 0){
+        if((annotherChannel.name.compareTo(this.name)) > 0){
             return -1;
-        }else if((annotherChannel.name.compareTo(this.name)) > 0){
+        }else if((annotherChannel.name.compareTo(this.name)) < 0){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+
+
+    public int compareToOccorrence(Channel annotherChannel) {
+        if(annotherChannel.occurrence < this.occurrence){
+            return -1;
+        }else if(annotherChannel.occurrence > this.occurrence){
             return 1;
         }else{
             return 0;
