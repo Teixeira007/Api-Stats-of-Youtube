@@ -90,11 +90,34 @@ public class ChannelController {
 		return channels.stream().filter(x -> x.getOccurrence() > 100).collect(Collectors.toList());
 	}
 
+//	Retorna o topX de canais mais assistidos
 	@GetMapping("/topX/{X}")
 	public List<ChannelNameOccurrence> topXOccurrence(@PathVariable("X") int x){
 		List<ChannelNameOccurrence> channels;
 		channels = getMoreOccurrencesOfAllTime();
 		return channels.stream().limit(x).collect(Collectors.toList());
+	}
+
+//	Retorna uma lista com as datas de todos os videos
+	public List<String> getAllTheDatesOfTheVideos(){
+
+		ObjectMapper mapper = new ObjectMapper();
+		List<String> channels = new ArrayList<>();
+		String pathName = "C:\\Users\\teixe\\Documents\\Api-Stats-of-Youtube\\src\\main\\java\\br\\com\\ufpb\\statsyoutube\\controller\\histórico-de-visualização.json";
+
+		try {
+			JsonNode root = mapper.readTree(new File(pathName));
+			for (JsonNode node : root) {
+				if (node.get("subtitles") != null) {
+					String time = node.get("time").asText();
+					channels.add(time);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Erro ao ler arquivo JSON: " + e.getMessage());
+		}
+
+		return channels;
 	}
 	
 }
