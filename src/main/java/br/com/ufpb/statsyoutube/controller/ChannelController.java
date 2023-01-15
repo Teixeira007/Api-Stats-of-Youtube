@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import br.com.ufpb.statsyoutube.model.ChannelNameTime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -98,19 +99,28 @@ public class ChannelController {
 		return channels.stream().limit(x).collect(Collectors.toList());
 	}
 
-//	Retorna uma lista com as datas de todos os videos
-	public List<String> getAllTheDatesOfTheVideos(){
+//	Recebe uma data completa e retorna só o ano
+	public String formatTime(String time){
+		String[] arrayTime = time.split("-");
+		String timeYear = arrayTime[0];
+		return timeYear;
+	}
+
+//	Retorna uma lista com o nome e o ano de todos os videos
+	public List<ChannelNameTime> getAListWithTheNameAndYearOfTheVideos(){
 
 		ObjectMapper mapper = new ObjectMapper();
-		List<String> channels = new ArrayList<>();
+		List<ChannelNameTime> channels = new ArrayList<>();
 		String pathName = "C:\\Users\\teixe\\Documents\\Api-Stats-of-Youtube\\src\\main\\java\\br\\com\\ufpb\\statsyoutube\\controller\\histórico-de-visualização.json";
 
 		try {
 			JsonNode root = mapper.readTree(new File(pathName));
 			for (JsonNode node : root) {
 				if (node.get("subtitles") != null) {
+					String name = node.get("subtitles").get(0).get("name").asText();
 					String time = node.get("time").asText();
-					channels.add(time);
+					String timeYear = formatTime(time);
+					channels.add(new ChannelNameTime(name, timeYear));
 				}
 			}
 		} catch (Exception e) {
@@ -119,5 +129,7 @@ public class ChannelController {
 
 		return channels;
 	}
+
+
 	
 }

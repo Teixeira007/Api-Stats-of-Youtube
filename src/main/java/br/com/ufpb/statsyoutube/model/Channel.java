@@ -25,6 +25,7 @@ public class Channel implements  Comparable<Channel>{
     private String url;
 
     private int occurrence;
+    private String time;
 
     public Channel(Long id, String name, String url) {
         this.id = id;
@@ -40,6 +41,7 @@ public class Channel implements  Comparable<Channel>{
         this.name = name;
         this.occurrence = occurrence;
     }
+
 
     public ChannelNameOccurrence getChannelNameOccurrence(){
         return new ChannelNameOccurrence(name, occurrence);
