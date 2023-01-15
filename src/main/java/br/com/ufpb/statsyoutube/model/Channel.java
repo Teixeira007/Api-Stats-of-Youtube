@@ -62,14 +62,4 @@ public class Channel implements  Comparable<Channel>{
         }
     }
 
-
-//    public int compareToOccorrence(ChannelNameOccurrence annotherChannel) {
-//        if(annotherChannel.occurrence < this.occurrence){
-//            return -1;
-//        }else if(annotherChannel.occurrence > this.occurrence){
-//            return 1;
-//        }else{
-//            return 0;
-//        }
-//    }
 }

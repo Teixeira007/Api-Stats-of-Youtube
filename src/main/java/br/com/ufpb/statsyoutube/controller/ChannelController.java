@@ -1,19 +1,13 @@
 package br.com.ufpb.statsyoutube.controller;
 
 import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,33 +48,26 @@ public class ChannelController {
 			System.out.println("Erro ao ler arquivo JSON: " + e.getMessage());
 		}
 
-
-//		Collections.sort(channels);
-//		for(int i=0; i<channels.size();i++){
-//			System.out.println(channels.get(i).getName());
-//		}
-		System.out.println(channels.size());
+//		System.out.println(channels.size());
+		Collections.sort(channels);
 		return channels;
 	}
 
+//	Pega uma lista com os nomes dos canais, ordena e conta quantas vezes cada canal foi visto
 	@GetMapping("/frequency")
 	public List<ChannelNameOccurrence> getMoreOccurrencesOfAllTime(){
 
 		List<String> channels;
 		channels = getListChannels();
-//		Collections.sort(channels, Channel::compareTo);
-		Collections.sort(channels);
+//		Collections.sort(channels);
 
 		String current = null;
 		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
 		int cnt = 0;
 
-
 		for(int i =0; i<channels.size(); i++){
-//			System.out.println(channels.get(i).getName());
 			if(!channels.get(i).equals(current)){
 				if(cnt > 0){
-//					listChannelsFrequency.add(new Channel(channels.get(i-1), cnt));
 					listChannelsFrequency.add(new ChannelNameOccurrence(channels.get(i-1), cnt));
 				}
 				current = channels.get(i);
@@ -92,6 +79,13 @@ public class ChannelController {
 
 		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
 		return listChannelsFrequency;
+	}
+
+	@GetMapping("/more100")
+	public List<ChannelNameOccurrence> more100Occurrence(){
+		List<ChannelNameOccurrence> channels;
+		channels = getMoreOccurrencesOfAllTime();
+		return channels.stream().filter(x -> x.getOccurrence() > 100).collect(Collectors.toList());
 	}
 	
 }

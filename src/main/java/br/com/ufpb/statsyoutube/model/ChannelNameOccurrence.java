@@ -13,6 +13,7 @@ public class ChannelNameOccurrence {
         this.occurrence = occurrence;
     }
 
+//  CompareTo - usado para ordenar os canais pelo atributo occurrence
     public int compareTo(ChannelNameOccurrence annotherChannel) {
         if(annotherChannel.occurrence < this.occurrence){
             return -1;
