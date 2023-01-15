@@ -2,11 +2,14 @@ package br.com.ufpb.statsyoutube.controller;
 
 import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 import br.com.ufpb.statsyoutube.model.ChannelNameTime;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,7 +50,7 @@ public class ChannelController {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Erro ao ler arquivo JSON: " + e.getMessage());
+			System.out.println("Erro ao ler arquivo JSON: function getListChannels" + e.getMessage());
 		}
 
 //		System.out.println(channels.size());
@@ -106,8 +109,8 @@ public class ChannelController {
 		return timeYear;
 	}
 
-//	Retorna uma lista com o nome e o ano de todos os videos
-	public List<ChannelNameTime> getAListWithTheNameAndYearOfTheVideos(){
+//	Retorna uma lista com o nome e a data de todos os videos
+	public List<ChannelNameTime> getAListWithTheNameAndDateTheVideos(){
 
 		ObjectMapper mapper = new ObjectMapper();
 		List<ChannelNameTime> channels = new ArrayList<>();
@@ -119,15 +122,39 @@ public class ChannelController {
 				if (node.get("subtitles") != null) {
 					String name = node.get("subtitles").get(0).get("name").asText();
 					String time = node.get("time").asText();
-					String timeYear = formatTime(time);
-					channels.add(new ChannelNameTime(name, timeYear));
+
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
+					channels.add(new ChannelNameTime(name, dateTime));
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Erro ao ler arquivo JSON: " + e.getMessage());
+			System.out.println("Erro ao ler arquivo JSON: function getAListWithTheNameAndDateTheVideos" + e.getMessage());
 		}
 
 		return channels;
+	}
+
+	@GetMapping("lastMonth/{month}")
+	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(@PathVariable("month") int month){
+		List<ChannelNameTime> channels;
+		List<ChannelNameTime> channelsMonth = new ArrayList<>();
+		channels = getAListWithTheNameAndDateTheVideos();
+
+		LocalDateTime currentDate = LocalDateTime.now();
+		long currentDateMille = currentDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+
+		channels.stream().filter(x -> {
+			long getTimeMille = x.getTime().toInstant(ZoneOffset.UTC).toEpochMilli();
+			long duractionMillesecond = currentDateMille - getTimeMille;
+			long duractionMinutes = duractionMillesecond/60000;
+			int duractionDays = (int)duractionMinutes/1440;
+
+			int days = month * 30;
+			return duractionDays <= days;
+
+		}).forEach(x -> channelsMonth.add(x));
+		return channelsMonth;
 	}
 
 
