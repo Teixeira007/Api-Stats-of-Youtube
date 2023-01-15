@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,11 +82,19 @@ public class ChannelController {
 		return listChannelsFrequency;
 	}
 
+//	Pegar todos os canais com mais de 100 ocorrências
 	@GetMapping("/more100")
 	public List<ChannelNameOccurrence> more100Occurrence(){
 		List<ChannelNameOccurrence> channels;
 		channels = getMoreOccurrencesOfAllTime();
 		return channels.stream().filter(x -> x.getOccurrence() > 100).collect(Collectors.toList());
+	}
+
+	@GetMapping("/topX/{X}")
+	public List<ChannelNameOccurrence> topXOccurrence(@PathVariable("X") int x){
+		List<ChannelNameOccurrence> channels;
+		channels = getMoreOccurrencesOfAllTime();
+		return channels.stream().limit(x).collect(Collectors.toList());
 	}
 	
 }
