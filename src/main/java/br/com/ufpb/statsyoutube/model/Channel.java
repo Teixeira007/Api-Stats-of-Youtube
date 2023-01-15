@@ -41,6 +41,9 @@ public class Channel implements  Comparable<Channel>{
         this.occurrence = occurrence;
     }
 
+    public ChannelNameOccurrence getChannelNameOccurrence(){
+        return new ChannelNameOccurrence(name, occurrence);
+    }
 
     @Override
     public String toString() {
@@ -60,13 +63,13 @@ public class Channel implements  Comparable<Channel>{
     }
 
 
-    public int compareToOccorrence(Channel annotherChannel) {
-        if(annotherChannel.occurrence < this.occurrence){
-            return -1;
-        }else if(annotherChannel.occurrence > this.occurrence){
-            return 1;
-        }else{
-            return 0;
-        }
-    }
+//    public int compareToOccorrence(ChannelNameOccurrence annotherChannel) {
+//        if(annotherChannel.occurrence < this.occurrence){
+//            return -1;
+//        }else if(annotherChannel.occurrence > this.occurrence){
+//            return 1;
+//        }else{
+//            return 0;
+//        }
+//    }
 }

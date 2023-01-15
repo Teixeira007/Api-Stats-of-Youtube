@@ -1,5 +1,6 @@
 package br.com.ufpb.statsyoutube.controller;
 
+import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -30,10 +31,10 @@ public class ChannelController {
 	
 //	Converte um arquivo JSON em uma lista de objetos ordenados
 	@GetMapping
-	public List<Channel> getListChannels(){
+	public List<String> getListChannels(){
 
 		ObjectMapper mapper = new ObjectMapper();
-		List<Channel> channels = new ArrayList<>();
+		List<String> channels = new ArrayList<>();
 		String pathName = "C:\\Users\\teixe\\Documents\\Api-Stats-of-Youtube\\src\\main\\java\\br\\com\\ufpb\\statsyoutube\\controller\\histórico-de-visualização.json";
 		Long idCont = 1L;
 
@@ -41,11 +42,12 @@ public class ChannelController {
 			JsonNode root = mapper.readTree(new File(pathName));
 			for (JsonNode node : root) {
 				if (node.get("subtitles") != null) {
-					Long id = idCont;
+//					Long id = idCont;
 					String name = node.get("subtitles").get(0).get("name").asText();
-					String url = node.get("subtitles").get(0).get("url").asText();
-					channels.add(new Channel(id, name, url));
-					idCont++;
+					channels.add(name);
+//					String url = node.get("subtitles").get(0).get("url").asText();
+//					channels.add(new Channel(id, name, url));
+//					idCont++;
 				}
 			}
 		} catch (Exception e) {
@@ -57,36 +59,38 @@ public class ChannelController {
 //		for(int i=0; i<channels.size();i++){
 //			System.out.println(channels.get(i).getName());
 //		}
-
+		System.out.println(channels.size());
 		return channels;
 	}
 
 	@GetMapping("/frequency")
-	public List<Channel> getMoreOccurrencesOfAllTime(){
+	public List<ChannelNameOccurrence> getMoreOccurrencesOfAllTime(){
 
-		List<Channel> channels;
+		List<String> channels;
 		channels = getListChannels();
-		Collections.sort(channels, Channel::compareTo);
+//		Collections.sort(channels, Channel::compareTo);
+		Collections.sort(channels);
 
 		String current = null;
-		List<Channel> listChannelsFrequency = new ArrayList<>();
+		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
 		int cnt = 0;
 
 
 		for(int i =0; i<channels.size(); i++){
-			System.out.println(channels.get(i).getName());
-			if(!channels.get(i).getName().equals(current)){
+//			System.out.println(channels.get(i).getName());
+			if(!channels.get(i).equals(current)){
 				if(cnt > 0){
-					listChannelsFrequency.add(new Channel(channels.get(i-1).getName(), cnt));
+//					listChannelsFrequency.add(new Channel(channels.get(i-1), cnt));
+					listChannelsFrequency.add(new ChannelNameOccurrence(channels.get(i-1), cnt));
 				}
-				current = channels.get(i).getName();
+				current = channels.get(i);
 				cnt = 1;
 			}else{
 				cnt++;
 			}
 		}
 
-		Collections.sort(listChannelsFrequency, Channel::compareToOccorrence);
+		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
 		return listChannelsFrequency;
 	}
 	
