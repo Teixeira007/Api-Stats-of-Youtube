@@ -2,7 +2,7 @@ package br.com.ufpb.statsyoutube.controller;
 
 import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
 
-import java.time.Period;
+
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -22,9 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import br.com.ufpb.statsyoutube.model.Channel;
-
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
@@ -36,7 +33,7 @@ public class ChannelController {
 		ObjectMapper mapper = new ObjectMapper();
 		List<String> channels = new ArrayList<>();
 		String pathName = "C:\\Users\\teixe\\Documents\\Api-Stats-of-Youtube\\src\\main\\java\\br\\com\\ufpb\\statsyoutube\\controller\\histórico-de-visualização.json";
-		Long idCont = 1L;
+//		Long idCont = 1L;
 
 		try {
 			JsonNode root = mapper.readTree(new File(pathName));
@@ -45,9 +42,6 @@ public class ChannelController {
 //					Long id = idCont;
 					String name = node.get("subtitles").get(0).get("name").asText();
 					channels.add(name);
-//					String url = node.get("subtitles").get(0).get("url").asText();
-//					channels.add(new Channel(id, name, url));
-//					idCont++;
 				}
 			}
 		} catch (Exception e) {
@@ -65,26 +59,10 @@ public class ChannelController {
 
 		List<String> channels;
 		channels = getListChannels();
-//		Collections.sort(channels);
 
-		String current = null;
-		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
-		int cnt = 0;
+		Collections.sort(channels);
 
-		for(int i =0; i<channels.size(); i++){
-			if(!channels.get(i).equals(current)){
-				if(cnt > 0){
-					listChannelsFrequency.add(new ChannelNameOccurrence(channels.get(i-1), cnt));
-				}
-				current = channels.get(i);
-				cnt = 1;
-			}else{
-				cnt++;
-			}
-		}
-
-		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
-		return listChannelsFrequency;
+		return getChannelsMostOccurrences(channels);
 	}
 
 //	Pegar todos os canais com mais de 100 ocorrências
@@ -102,13 +80,15 @@ public class ChannelController {
 		channels = getMoreOccurrencesOfAllTime();
 		return channels.stream().limit(x).collect(Collectors.toList());
 	}
-
-//	Recebe uma data completa e retorna só o ano
+/*
+	Recebe uma data completa e retorna só o ano
 	public String formatTime(String time){
 		String[] arrayTime = time.split("-");
 		String timeYear = arrayTime[0];
 		return timeYear;
 	}
+*/
+
 
 //	Retorna uma lista com o nome e a data de todos os videos
 	public List<ChannelNameTime> getAListWithTheNameAndDateTheVideos(){
@@ -147,6 +127,8 @@ public class ChannelController {
 		return channels;
 	}
 
+
+//	É a função matriz para pegar a lista com os videos mais assistidos nos ultimos meses e nos ultimos dias
 	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(double month){
 		List<ChannelNameTime> channels;
 		List<ChannelNameTime> channelsMonth = new ArrayList<>();
@@ -169,6 +151,7 @@ public class ChannelController {
 		return channelsMonth;
 	}
 
+//	Pegar uma lista com os canais mais vistos nos últimos meses
 	@GetMapping("/lastMonth/{month}")
 	public List<ChannelNameOccurrence> getChannelsMostOccurrencesLastMonths(@PathVariable("month") double month){
 
@@ -180,27 +163,10 @@ public class ChannelController {
 		});
 
 		Collections.sort(channelsString);
-
-		String current = null;
-		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
-		int cnt = 0;
-
-		for(int i =0; i<channelsString.size(); i++){
-			if(!channelsString.get(i).equals(current)){
-				if(cnt > 0){
-					listChannelsFrequency.add(new ChannelNameOccurrence(channelsString.get(i-1), cnt));
-				}
-				current = channelsString.get(i);
-				cnt = 1;
-			}else{
-				cnt++;
-			}
-		}
-
-		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
-		return listChannelsFrequency;
+		return getChannelsMostOccurrences(channelsString);
 	}
 
+//	Pegar uma lista com os canais mais vistos nos últimos dias
 	@GetMapping("/lastDays/{days}")
 	public List<ChannelNameOccurrence> getChannelsMostOccurrencesLastDays(@PathVariable("days") int days){
 
@@ -214,7 +180,11 @@ public class ChannelController {
 		});
 
 		Collections.sort(channelsString);
+		return getChannelsMostOccurrences(channelsString);
+	}
 
+//	Recebe uma lista de canais e conta quantas vezes cada um aparece
+	public List<ChannelNameOccurrence> getChannelsMostOccurrences(List<String> channelsString){
 		String current = null;
 		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
 		int cnt = 0;
@@ -234,9 +204,4 @@ public class ChannelController {
 		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
 		return listChannelsFrequency;
 	}
-
-
-
-
-	
 }
