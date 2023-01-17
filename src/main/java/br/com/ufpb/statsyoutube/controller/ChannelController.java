@@ -123,9 +123,20 @@ public class ChannelController {
 					String name = node.get("subtitles").get(0).get("name").asText();
 					String time = node.get("time").asText();
 
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-					LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
-					channels.add(new ChannelNameTime(name, dateTime));
+					String ISO8601 = "yyyy-MM-dd'T'HH:mm:ssX";
+					String ISO8601MILLI = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+					String pattern1 = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z";
+					String pattern2 = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z";
+
+					if(time.matches(pattern1)){
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ISO8601MILLI);
+						LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
+						channels.add(new ChannelNameTime(name, dateTime));
+					}else if(time.matches(pattern2)){
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ISO8601);
+						LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
+						channels.add(new ChannelNameTime(name, dateTime));
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -135,8 +146,7 @@ public class ChannelController {
 		return channels;
 	}
 
-	@GetMapping("lastMonth/{month}")
-	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(@PathVariable("month") int month){
+	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(int month){
 		List<ChannelNameTime> channels;
 		List<ChannelNameTime> channelsMonth = new ArrayList<>();
 		channels = getAListWithTheNameAndDateTheVideos();
@@ -155,6 +165,40 @@ public class ChannelController {
 
 		}).forEach(x -> channelsMonth.add(x));
 		return channelsMonth;
+	}
+
+	@GetMapping("/lastMonth/{month}")
+	public List<ChannelNameOccurrence> getChannelsMostOccurrencesLastMonths(@PathVariable("month") int month){
+
+		List<ChannelNameTime> channels = getVideossWatchedInTheLastFewMonths(month);
+		List<String> channelsString = new ArrayList<>();
+
+		channels.stream().forEach(c -> {
+			channelsString.add(c.getName());
+		});
+
+		Collections.sort(channelsString);
+
+		String current = null;
+		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
+		int cnt = 0;
+
+		for(int i =0; i<channelsString.size(); i++){
+			if(!channelsString.get(i).equals(current)){
+				if(cnt > 0){
+					listChannelsFrequency.add(new ChannelNameOccurrence(channelsString.get(i-1), cnt));
+				}
+				current = channelsString.get(i);
+				cnt = 1;
+			}else{
+				cnt++;
+			}
+		}
+
+		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
+		return listChannelsFrequency;
+
+
 	}
 
 
