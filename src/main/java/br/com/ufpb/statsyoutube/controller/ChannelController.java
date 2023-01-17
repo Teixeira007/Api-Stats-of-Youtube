@@ -2,6 +2,7 @@ package br.com.ufpb.statsyoutube.controller;
 
 import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
 
+import java.time.Period;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -146,7 +147,7 @@ public class ChannelController {
 		return channels;
 	}
 
-	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(int month){
+	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(double month){
 		List<ChannelNameTime> channels;
 		List<ChannelNameTime> channelsMonth = new ArrayList<>();
 		channels = getAListWithTheNameAndDateTheVideos();
@@ -160,7 +161,8 @@ public class ChannelController {
 			long duractionMinutes = duractionMillesecond/60000;
 			int duractionDays = (int)duractionMinutes/1440;
 
-			int days = month * 30;
+			double monthD = month * 30;
+			int days = (int)monthD;
 			return duractionDays <= days;
 
 		}).forEach(x -> channelsMonth.add(x));
@@ -168,7 +170,7 @@ public class ChannelController {
 	}
 
 	@GetMapping("/lastMonth/{month}")
-	public List<ChannelNameOccurrence> getChannelsMostOccurrencesLastMonths(@PathVariable("month") int month){
+	public List<ChannelNameOccurrence> getChannelsMostOccurrencesLastMonths(@PathVariable("month") double month){
 
 		List<ChannelNameTime> channels = getVideossWatchedInTheLastFewMonths(month);
 		List<String> channelsString = new ArrayList<>();
@@ -197,9 +199,43 @@ public class ChannelController {
 
 		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
 		return listChannelsFrequency;
-
-
 	}
+
+	@GetMapping("/lastDays/{days}")
+	public List<ChannelNameOccurrence> getChannelsMostOccurrencesLastDays(@PathVariable("days") int days){
+
+		double month = (double) days/30;
+
+		List<ChannelNameTime> channels = getVideossWatchedInTheLastFewMonths(month);
+		List<String> channelsString = new ArrayList<>();
+
+		channels.stream().forEach(c -> {
+			channelsString.add(c.getName());
+		});
+
+		Collections.sort(channelsString);
+
+		String current = null;
+		List<ChannelNameOccurrence> listChannelsFrequency = new ArrayList<>();
+		int cnt = 0;
+
+		for(int i =0; i<channelsString.size(); i++){
+			if(!channelsString.get(i).equals(current)){
+				if(cnt > 0){
+					listChannelsFrequency.add(new ChannelNameOccurrence(channelsString.get(i-1), cnt));
+				}
+				current = channelsString.get(i);
+				cnt = 1;
+			}else{
+				cnt++;
+			}
+		}
+
+		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
+		return listChannelsFrequency;
+	}
+
+
 
 
 	
