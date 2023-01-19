@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 import br.com.ufpb.statsyoutube.model.ChannelNameTime;
+import br.com.ufpb.statsyoutube.model.ChannelNameYear;
+import br.com.ufpb.statsyoutube.model.ChannelNameYearOccurrence;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -80,15 +82,6 @@ public class ChannelController {
 		channels = getMoreOccurrencesOfAllTime();
 		return channels.stream().limit(x).collect(Collectors.toList());
 	}
-/*
-	Recebe uma data completa e retorna só o ano
-	public String formatTime(String time){
-		String[] arrayTime = time.split("-");
-		String timeYear = arrayTime[0];
-		return timeYear;
-	}
-*/
-
 
 //	Retorna uma lista com o nome e a data de todos os videos
 	public List<ChannelNameTime> getAListWithTheNameAndDateTheVideos(){
@@ -204,4 +197,61 @@ public class ChannelController {
 		Collections.sort(listChannelsFrequency, ChannelNameOccurrence::compareTo);
 		return listChannelsFrequency;
 	}
+
+	//Recebe uma data completa e retorna só o ano
+	public String formatTime(String time){
+		String[] arrayTime = time.split("-");
+		String timeYear = arrayTime[0];
+		return timeYear;
+	}
+
+//	Pegar uma lista com os nomes dos canais e os anos em que foram vistos os videos
+	@GetMapping("/teste")
+	public List<ChannelNameYear> getChannelAndYear(){
+		ObjectMapper mapper = new ObjectMapper();
+		List<ChannelNameYear> channels = new ArrayList<>();
+		String pathName = "C:\\Users\\teixe\\Documents\\Api-Stats-of-Youtube\\src\\main\\java\\br\\com\\ufpb\\statsyoutube\\controller\\histórico-de-visualização.json";
+
+		try {
+			JsonNode root = mapper.readTree(new File(pathName));
+			for (JsonNode node : root) {
+				if (node.get("subtitles") != null) {
+					String name = node.get("subtitles").get(0).get("name").asText();
+					String time = node.get("time").asText();
+
+					String year = formatTime(time);
+					channels.add(new ChannelNameYear(name, year));
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Erro ao ler arquivo JSON: function getChannelAndYear" + e.getMessage());
+		}
+
+		return channels;
+	}
+
+//	public List<ChannelNameYearOccurrence> getChannelsOccurrenceNumberGivenYear(){
+//		List<ChannelNameYear> channelNameYears = getChannelAndYear();
+//		Collections.sort(channelNameYears, ChannelNameYear::compareTo);
+//
+//		ChannelNameYearOccurrence current = null;
+//		List<ChannelNameYearOccurrence> channelNameYearOccurrences = new ArrayList<>();
+//		int cnt = 0;
+//
+//		for(int i =0; i<channelNameYearOccurrences.size(); i++){
+//			if(current == null){
+//				current = channelNameYearOccurrences.get(i);
+//				cnt = 1;
+//			}
+//			if((channelNameYearOccurrences.get(i).getName().equals(current.getName())) &&
+//					(channelNameYearOccurrences.get(i).getYear().equals(current.getYear()))){
+//				cnt++;
+//			}
+//			else{
+////				if(cnt>0)
+//			}
+//
+//		}
+//
+//	}
 }
