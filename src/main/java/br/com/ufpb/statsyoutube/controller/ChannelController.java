@@ -206,7 +206,7 @@ public class ChannelController {
 	}
 
 //	Pegar uma lista com os nomes dos canais e os anos em que foram vistos os videos
-	@GetMapping("/teste")
+
 	public List<ChannelNameYear> getChannelAndYear(){
 		ObjectMapper mapper = new ObjectMapper();
 		List<ChannelNameYear> channels = new ArrayList<>();
@@ -230,28 +230,48 @@ public class ChannelController {
 		return channels;
 	}
 
-//	public List<ChannelNameYearOccurrence> getChannelsOccurrenceNumberGivenYear(){
-//		List<ChannelNameYear> channelNameYears = getChannelAndYear();
-//		Collections.sort(channelNameYears, ChannelNameYear::compareTo);
-//
-//		ChannelNameYearOccurrence current = null;
-//		List<ChannelNameYearOccurrence> channelNameYearOccurrences = new ArrayList<>();
-//		int cnt = 0;
-//
-//		for(int i =0; i<channelNameYearOccurrences.size(); i++){
-//			if(current == null){
-//				current = channelNameYearOccurrences.get(i);
-//				cnt = 1;
-//			}
-//			if((channelNameYearOccurrences.get(i).getName().equals(current.getName())) &&
-//					(channelNameYearOccurrences.get(i).getYear().equals(current.getYear()))){
-//				cnt++;
-//			}
-//			else{
-////				if(cnt>0)
-//			}
-//
-//		}
-//
-//	}
+//	Retornar uma lista com o nome dos canais o ano dos videos e o número de vezes que cada canal foi visto
+	public List<ChannelNameYearOccurrence> getChannelsOccurrenceNumberGivenYear(){
+		List<ChannelNameYear> channelNameYears = getChannelAndYear();
+		Collections.sort(channelNameYears, ChannelNameYear::compareTo);
+
+		ChannelNameYear current = null;
+		List<ChannelNameYearOccurrence> channelNameYearOccurrences = new ArrayList<>();
+		int cnt = 0;
+
+		for(int i =0; i<channelNameYears.size(); i++){
+			if(current == null){
+				current = channelNameYears.get(i);
+				cnt = 1;
+			}
+			if((channelNameYears.get(i).getName().equals(current.getName())) &&
+					(channelNameYears.get(i).getYear().equals(current.getYear()))){
+				cnt++;
+			}
+			else{
+				if(cnt>0){
+					channelNameYearOccurrences.add(new ChannelNameYearOccurrence(
+							channelNameYears.get(i-1).getName(),
+							channelNameYears.get(i-1).getYear(),
+							cnt
+							));
+				}
+				current = channelNameYears.get(i);
+				cnt = 1;
+			}
+
+		}
+		return channelNameYearOccurrences;
+	}
+
+//	Retornar uma lista com os canais mais assistidos por ano
+	@GetMapping("/year/{year}")
+	public List<ChannelNameYearOccurrence> channelsWatchedGivenYear(@PathVariable("year") String year){
+		List<ChannelNameYearOccurrence> channel = getChannelsOccurrenceNumberGivenYear();
+		return channel.stream()
+				.filter(c -> c.getYear().equals(year))
+				.sorted(ChannelNameYearOccurrence::compareTo)
+				.collect(Collectors.toList());
+	}
+
 }
