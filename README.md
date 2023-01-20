@@ -87,7 +87,7 @@ Rotas:
 | `200`       | Uma lista (Array) canais e sua frequencia |
 
 
-#### Lista top X de canais mais visto sendo X o parâmetro
+#### Lista top X de canais mais visto, sendo X o parâmetro
 
 ```http
   GET /channels/topX/{X}
@@ -103,7 +103,7 @@ Rotas:
 | :--------  | :-------------------------------- |
 | `200`       | Uma lista (Array) de canais |
 
-#### Lista os canais mais visto nos X ultimos meses sendo X o parâmetro
+#### Lista os canais mais visto nos X ultimos meses, sendo X o parâmetro
 
 ```http
   GET /channels/lastMonth/{month}
@@ -119,7 +119,7 @@ Rotas:
 | :--------  | :-------------------------------- |
 | `200`       | Uma lista (Array) de canais |
 
-#### Lista os canais mais visto nos X ultimos dias sendo X o parâmetro
+#### Lista os canais mais visto nos X ultimos dias, sendo X o parâmetro
 
 ```http
   GET /channels/lastDays/{days}
@@ -154,4 +154,4 @@ Rotas:
 
 ## Inspiração
 
-https://wakatime.com/
+ - Stats for Spotify
