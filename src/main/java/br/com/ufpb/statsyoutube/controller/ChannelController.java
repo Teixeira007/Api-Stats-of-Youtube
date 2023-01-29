@@ -1,8 +1,10 @@
 package br.com.ufpb.statsyoutube.controller;
 
-import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
+import br.com.ufpb.statsyoutube.model.*;
 
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -12,13 +14,12 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
-import br.com.ufpb.statsyoutube.model.ChannelNameTime;
-import br.com.ufpb.statsyoutube.model.ChannelNameYear;
-import br.com.ufpb.statsyoutube.model.ChannelNameYearOccurrence;
+import br.com.ufpb.statsyoutube.repository.ChannelRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChannelController {
 	
 //	Converte um arquivo JSON em uma lista de objetos ordenados
+
 	@GetMapping
 	public List<String> getListChannels(){
 
@@ -265,7 +267,7 @@ public class ChannelController {
 	}
 
 //	Retornar uma lista com os canais mais assistidos por ano
-	@GetMapping("/year/{year}")
+	@GetMapping("/lastYear/{year}")
 	public List<ChannelNameYearOccurrence> channelsWatchedGivenYear(@PathVariable("year") String year){
 		List<ChannelNameYearOccurrence> channel = getChannelsOccurrenceNumberGivenYear();
 		return channel.stream()
@@ -273,5 +275,12 @@ public class ChannelController {
 				.sorted(ChannelNameYearOccurrence::compareTo)
 				.collect(Collectors.toList());
 	}
+
+//	@GetMapping("/teste")
+//	public List<ChannelOrigin> teste(@Autowired ChannelRepository channelRepository){
+//		List<ChannelOrigin> channelOrigin = (List<ChannelOrigin>) channelRepository.findAll();
+//		System.out.println(channelOrigin);
+//		return channelOrigin;
+//	}
 
 }
