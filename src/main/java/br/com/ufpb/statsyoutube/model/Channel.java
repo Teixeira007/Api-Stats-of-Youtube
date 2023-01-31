@@ -11,13 +11,13 @@ import jakarta.persistence.OneToOne;
 import lombok.*;
 
 
-@Entity
+//@Entity
 @Setter @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Channel implements  Comparable<Channel>{
 
-    @EqualsAndHashCode.Include
-    @Id
+//    @EqualsAndHashCode.Include
+//    @Id
     private Long id;
 
     private String name;

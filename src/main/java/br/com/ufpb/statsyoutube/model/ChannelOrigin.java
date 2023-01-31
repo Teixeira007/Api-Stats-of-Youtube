@@ -9,12 +9,12 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity
+//@Entity
 @Setter @Getter
 public class ChannelOrigin {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
 
     private String header;
     private String title;

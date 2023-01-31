@@ -1,15 +1,26 @@
 package br.com.ufpb.statsyoutube.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Setter @Getter
 public class ChannelNameTime {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private String name;
     private LocalDateTime time;
+
+    public ChannelNameTime() {
+    }
 
     public ChannelNameTime(String name, LocalDateTime time){
         this.name = name;

@@ -1,10 +1,9 @@
 package br.com.ufpb.statsyoutube.controller;
 
+import br.com.ufpb.statsyoutube.configuration.DatabaseLoader;
 import br.com.ufpb.statsyoutube.model.*;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -14,21 +13,29 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
-import br.com.ufpb.statsyoutube.repository.ChannelRepository;
+import br.com.ufpb.statsyoutube.repository.ChannelNameOccurrenceRepository;
+import br.com.ufpb.statsyoutube.repository.ChannelNameTimeRepository;
+//import br.com.ufpb.statsyoutube.repository.ChannelNameYearRepository;
+import br.com.ufpb.statsyoutube.repository.ChannelNameYearRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/channels")
 public class ChannelController {
-	
+
+	private final ChannelNameOccurrenceRepository channelNameOccurrenceRepository;
+	private final ChannelNameTimeRepository channelNameTimeRepository;
+	private final ChannelNameYearRepository channelNameYearRepository;
+
 //	Converte um arquivo JSON em uma lista de objetos ordenados
 
 	@GetMapping
@@ -60,32 +67,28 @@ public class ChannelController {
 //	Pega uma lista com os nomes dos canais, ordena e conta quantas vezes cada canal foi visto
 	@GetMapping("/frequency")
 	public List<ChannelNameOccurrence> getMoreOccurrencesOfAllTime(){
-
-		List<String> channels;
-		channels = getListChannels();
-
-		Collections.sort(channels);
-
-		return getChannelsMostOccurrences(channels);
+		return channelNameOccurrenceRepository.findAll();
 	}
 
 //	Pegar todos os canais com mais de 100 ocorrências
 	@GetMapping("/more100")
 	public List<ChannelNameOccurrence> more100Occurrence(){
-		List<ChannelNameOccurrence> channels;
-		channels = getMoreOccurrencesOfAllTime();
-		return channels.stream().filter(x -> x.getOccurrence() > 100).collect(Collectors.toList());
+		return channelNameOccurrenceRepository.findAll().
+				stream().
+				filter(x -> x.getOccurrence() > 100).
+				collect(Collectors.toList());
 	}
 
 //	Retorna o topX de canais mais assistidos
 	@GetMapping("/topX/{X}")
 	public List<ChannelNameOccurrence> topXOccurrence(@PathVariable("X") int x){
-		List<ChannelNameOccurrence> channels;
-		channels = getMoreOccurrencesOfAllTime();
-		return channels.stream().limit(x).collect(Collectors.toList());
+		return channelNameOccurrenceRepository.findAll()
+				.stream()
+				.limit(x)
+				.collect(Collectors.toList());
 	}
 
-//	Retorna uma lista com o nome e a data de todos os videos
+	//	Retorna uma lista com o nome e a data de todos os videos
 	public List<ChannelNameTime> getAListWithTheNameAndDateTheVideos(){
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -126,13 +129,12 @@ public class ChannelController {
 //	É a função matriz para pegar a lista com os videos mais assistidos nos ultimos meses e nos ultimos dias
 	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(double month){
 		List<ChannelNameTime> channels;
-		List<ChannelNameTime> channelsMonth = new ArrayList<>();
-		channels = getAListWithTheNameAndDateTheVideos();
+		channels = channelNameTimeRepository.findAll();
 
 		LocalDateTime currentDate = LocalDateTime.now();
 		long currentDateMille = currentDate.toInstant(ZoneOffset.UTC).toEpochMilli();
 
-		channels.stream().filter(x -> {
+		return channels.stream().filter(x -> {
 			long getTimeMille = x.getTime().toInstant(ZoneOffset.UTC).toEpochMilli();
 			long duractionMillesecond = currentDateMille - getTimeMille;
 			long duractionMinutes = duractionMillesecond/60000;
@@ -142,8 +144,7 @@ public class ChannelController {
 			int days = (int)monthD;
 			return duractionDays <= days;
 
-		}).forEach(x -> channelsMonth.add(x));
-		return channelsMonth;
+		}).collect(Collectors.toList());
 	}
 
 //	Pegar uma lista com os canais mais vistos nos últimos meses
@@ -207,7 +208,7 @@ public class ChannelController {
 		return timeYear;
 	}
 
-//	Pegar uma lista com os nomes dos canais e os anos em que foram vistos os videos
+	//	Pegar uma lista com os nomes dos canais e os anos em que foram vistos os videos
 
 	public List<ChannelNameYear> getChannelAndYear(){
 		ObjectMapper mapper = new ObjectMapper();
@@ -234,7 +235,7 @@ public class ChannelController {
 
 //	Retornar uma lista com o nome dos canais o ano dos videos e o número de vezes que cada canal foi visto
 	public List<ChannelNameYearOccurrence> getChannelsOccurrenceNumberGivenYear(){
-		List<ChannelNameYear> channelNameYears = getChannelAndYear();
+		List<ChannelNameYear> channelNameYears = channelNameYearRepository.findAll();
 		Collections.sort(channelNameYears, ChannelNameYear::compareTo);
 
 		ChannelNameYear current = null;
@@ -247,14 +248,14 @@ public class ChannelController {
 				cnt = 1;
 			}
 			if((channelNameYears.get(i).getName().equals(current.getName())) &&
-					(channelNameYears.get(i).getYear().equals(current.getYear()))){
+					(channelNameYears.get(i).getTimeYear().equals(current.getTimeYear()))){
 				cnt++;
 			}
 			else{
 				if(cnt>0){
 					channelNameYearOccurrences.add(new ChannelNameYearOccurrence(
 							channelNameYears.get(i-1).getName(),
-							channelNameYears.get(i-1).getYear(),
+							channelNameYears.get(i-1).getTimeYear(),
 							cnt
 							));
 				}
@@ -276,11 +277,5 @@ public class ChannelController {
 				.collect(Collectors.toList());
 	}
 
-//	@GetMapping("/teste")
-//	public List<ChannelOrigin> teste(@Autowired ChannelRepository channelRepository){
-//		List<ChannelOrigin> channelOrigin = (List<ChannelOrigin>) channelRepository.findAll();
-//		System.out.println(channelOrigin);
-//		return channelOrigin;
-//	}
 
 }

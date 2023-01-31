@@ -1,16 +1,31 @@
 package br.com.ufpb.statsyoutube.model;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter @Getter
-public class ChannelNameYear {
-    private String name;
-    private String year;
 
-    public ChannelNameYear(String name, String year) {
+@Setter @Getter
+@Entity
+public class ChannelNameYear {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private String name;
+    private String timeYear;
+
+    public ChannelNameYear() {
+    }
+
+    public ChannelNameYear(String name, String timeYear) {
         this.name = name;
-        this.year = year;
+        this.timeYear = timeYear;
     }
 
 
