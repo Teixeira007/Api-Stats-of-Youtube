@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 @AllArgsConstructor
-@Component
+//@Component
 public class DatabaseLoader implements CommandLineRunner {
 
     private final ChannelController channelController;

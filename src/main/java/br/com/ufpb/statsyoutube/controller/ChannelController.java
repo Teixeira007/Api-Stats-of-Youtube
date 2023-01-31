@@ -1,6 +1,6 @@
 package br.com.ufpb.statsyoutube.controller;
 
-import br.com.ufpb.statsyoutube.configuration.DatabaseLoader;
+
 import br.com.ufpb.statsyoutube.model.*;
 
 
@@ -13,10 +13,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
-import br.com.ufpb.statsyoutube.repository.ChannelNameOccurrenceRepository;
-import br.com.ufpb.statsyoutube.repository.ChannelNameTimeRepository;
-//import br.com.ufpb.statsyoutube.repository.ChannelNameYearRepository;
-import br.com.ufpb.statsyoutube.repository.ChannelNameYearRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,9 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/channels")
 public class ChannelController {
 
-	private final ChannelNameOccurrenceRepository channelNameOccurrenceRepository;
-	private final ChannelNameTimeRepository channelNameTimeRepository;
-	private final ChannelNameYearRepository channelNameYearRepository;
 
 //	Converte um arquivo JSON em uma lista de objetos ordenados
 
@@ -67,13 +60,13 @@ public class ChannelController {
 //	Pega uma lista com os nomes dos canais, ordena e conta quantas vezes cada canal foi visto
 	@GetMapping("/frequency")
 	public List<ChannelNameOccurrence> getMoreOccurrencesOfAllTime(){
-		return channelNameOccurrenceRepository.findAll();
+		return getChannelsMostOccurrences(getListChannels());
 	}
 
 //	Pegar todos os canais com mais de 100 ocorrências
 	@GetMapping("/more100")
 	public List<ChannelNameOccurrence> more100Occurrence(){
-		return channelNameOccurrenceRepository.findAll().
+		return getChannelsMostOccurrences(getListChannels()).
 				stream().
 				filter(x -> x.getOccurrence() > 100).
 				collect(Collectors.toList());
@@ -82,7 +75,7 @@ public class ChannelController {
 //	Retorna o topX de canais mais assistidos
 	@GetMapping("/topX/{X}")
 	public List<ChannelNameOccurrence> topXOccurrence(@PathVariable("X") int x){
-		return channelNameOccurrenceRepository.findAll()
+		return getChannelsMostOccurrences(getListChannels())
 				.stream()
 				.limit(x)
 				.collect(Collectors.toList());
@@ -129,7 +122,7 @@ public class ChannelController {
 //	É a função matriz para pegar a lista com os videos mais assistidos nos ultimos meses e nos ultimos dias
 	public List<ChannelNameTime> getVideossWatchedInTheLastFewMonths(double month){
 		List<ChannelNameTime> channels;
-		channels = channelNameTimeRepository.findAll();
+		channels = getAListWithTheNameAndDateTheVideos();
 
 		LocalDateTime currentDate = LocalDateTime.now();
 		long currentDateMille = currentDate.toInstant(ZoneOffset.UTC).toEpochMilli();
@@ -235,7 +228,7 @@ public class ChannelController {
 
 //	Retornar uma lista com o nome dos canais o ano dos videos e o número de vezes que cada canal foi visto
 	public List<ChannelNameYearOccurrence> getChannelsOccurrenceNumberGivenYear(){
-		List<ChannelNameYear> channelNameYears = channelNameYearRepository.findAll();
+		List<ChannelNameYear> channelNameYears = getChannelAndYear();
 		Collections.sort(channelNameYears, ChannelNameYear::compareTo);
 
 		ChannelNameYear current = null;
