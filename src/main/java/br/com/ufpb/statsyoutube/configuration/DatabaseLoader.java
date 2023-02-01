@@ -4,9 +4,9 @@ import br.com.ufpb.statsyoutube.controller.ChannelController;
 import br.com.ufpb.statsyoutube.model.ChannelNameOccurrence;
 import br.com.ufpb.statsyoutube.model.ChannelNameTime;
 import br.com.ufpb.statsyoutube.model.ChannelNameYear;
-import br.com.ufpb.statsyoutube.repository.ChannelNameOccurrenceRepository;
-import br.com.ufpb.statsyoutube.repository.ChannelNameTimeRepository;
-import br.com.ufpb.statsyoutube.repository.ChannelNameYearRepository;
+//import br.com.ufpb.statsyoutube.repository.ChannelNameOccurrenceRepository;
+//import br.com.ufpb.statsyoutube.repository.ChannelNameTimeRepository;
+//import br.com.ufpb.statsyoutube.repository.ChannelNameYearRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -17,9 +17,9 @@ import java.util.List;
 public class DatabaseLoader implements CommandLineRunner {
 
     private final ChannelController channelController;
-    private final ChannelNameOccurrenceRepository channelNameOccurrenceRepository;
-    private final ChannelNameTimeRepository channelNameTimeRepository;
-    private final ChannelNameYearRepository channelNameYearRepository;
+//    private final ChannelNameOccurrenceRepository channelNameOccurrenceRepository;
+//    private final ChannelNameTimeRepository channelNameTimeRepository;
+//    private final ChannelNameYearRepository channelNameYearRepository;
 
 //    private final ChannelNameYearRepository channelNameYearRepository;
 
@@ -60,17 +60,17 @@ public class DatabaseLoader implements CommandLineRunner {
         List<ChannelNameTime> channelNameTimes = channelController.getAListWithTheNameAndDateTheVideos();
         List<ChannelNameYear> channelNameYears = channelController.getChannelAndYear();
 
-        channels.stream().forEach(c -> {
-            channelNameOccurrenceRepository.save(c);
-        });
-
-        channelNameTimes.stream().forEach(c -> {
-            channelNameTimeRepository.save(c);
-        });
-
-        channelNameYears.stream().forEach(c -> {
-            channelNameYearRepository.save(c);
-        });
+//        channels.stream().forEach(c -> {
+//            channelNameOccurrenceRepository.save(c);
+//        });
+//
+//        channelNameTimes.stream().forEach(c -> {
+//            channelNameTimeRepository.save(c);
+//        });
+//
+//        channelNameYears.stream().forEach(c -> {
+//            channelNameYearRepository.save(c);
+//        });
     }
 
 }

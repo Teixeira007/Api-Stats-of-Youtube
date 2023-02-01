@@ -10,12 +10,12 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
-@Entity
+//@Entity
 @Setter @Getter
 public class ChannelNameTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
     private String name;
     private LocalDateTime time;
 

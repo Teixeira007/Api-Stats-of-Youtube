@@ -10,12 +10,12 @@ import lombok.Setter;
 
 
 @Setter @Getter
-@Entity
+//@Entity
 public class ChannelNameYear {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
 
     private String name;
     private String timeYear;

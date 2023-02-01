@@ -8,11 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-@Entity
+//@Entity
 public class ChannelNameOccurrence {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
     private String name;
     private int occurrence;
 
