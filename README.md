@@ -18,7 +18,7 @@ Como a API do Youtube não disponibiliza o historico de visualização você ter
 
 Para acessar o Google Takeout e baixar o histórico de visualizações do YouTube siga:
 
-- Acesse [TakeOut](takeout.google.com) e faça login na sua conta do Google.
+- Acesse TakeOut takeout.google.com e faça login na sua conta do Google.
 - Selecione o YouTube na lista de serviços disponíveis.
 - Escolha o formato de arquivo como JSON.
 - Em todos os dados deixe apenas histórico.
