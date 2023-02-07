@@ -4,6 +4,8 @@ package br.com.ufpb.statsyoutube.controller;
 import br.com.ufpb.statsyoutube.model.*;
 
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -16,8 +18,14 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import java.io.IOException;
+
 
 import lombok.AllArgsConstructor;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -268,6 +276,56 @@ public class ChannelController {
 				.filter(c -> c.getYear().equals(year))
 				.sorted(ChannelNameYearOccurrence::compareTo)
 				.collect(Collectors.toList());
+	}
+
+	public void getWebScraping(){
+
+		try {
+			// Conecte-se à página da web
+			Document document = Jsoup.connect("https://wikipedia.org/wiki/Henrique_e_Juliano").get();
+
+			// Extraia o título da página
+
+			Element table = document.select("table").first();
+
+			Element img = table.select("img").first();
+			String imgSrc = img.attr("src");
+			String genres = "";
+
+			for (Element row : table.select("tr")) {
+				// Select the first column in the row
+				Element firstColumn = row.select("th:nth-of-type(1)").first();
+
+				// If the first column is not null
+				if (firstColumn != null) {
+					// If the value in the first column is equal to the search value
+					if (firstColumn.text().equals("Genres")) {
+						// Select the second column in the row
+						Element secondColumn = row.select("td:nth-of-type(1)").first();
+
+						// Get the value in the second column
+						String secondColumnValue = secondColumn.text();
+//						System.out.println("Second Column Value: " + secondColumnValue);
+						genres = secondColumnValue;
+
+						// Break out of the loop
+						break;
+					}
+				}
+			}
+
+			System.out.println(imgSrc);
+			System.out.println(genres);
+
+		} catch (IOException e) {
+			System.out.println("Ocorreu um erro ao conectar à página da web: " + e.getMessage());
+		}
+
+	}
+
+	@GetMapping("/teste")
+	public void teste(){
+		getWebScraping();
 	}
 
 
